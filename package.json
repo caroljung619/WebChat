@@ -12,9 +12,22 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@stomp/stompjs": "^5.4.4",
+    "ajax": "0.0.4",
+    "basic-vue-chat": "^0.3.5",
+    "bootstrap": "^4.5.0",
+    "emoji-mart-vue": "^2.6.6",
+    "jquery": "^3.5.1",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^9.0.1",
+    "sockjs-client": "^1.4.0",
     "vue": "^2.5.2",
+    "vue-moment": "^4.1.0",
+    "vue-quick-chat": "^1.2.2",
     "vue-resource": "^1.5.1",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "websocket": "^1.0.31",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -31,7 +44,7 @@
     "chromedriver": "^2.27.2",
     "copy-webpack-plugin": "^4.0.1",
     "cross-spawn": "^5.0.1",
-    "css-loader": "^0.28.0",
+    "css-loader": "^0.28.11",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^1.1.4",
     "friendly-errors-webpack-plugin": "^1.6.1",
@@ -50,8 +63,8 @@
     "shelljs": "^0.7.6",
     "uglifyjs-webpack-plugin": "^1.1.1",
     "url-loader": "^0.5.8",
-    "vue-loader": "^13.3.0",
-    "vue-style-loader": "^3.0.1",
+    "vue-loader": "^13.7.3",
+    "vue-style-loader": "^3.1.2",
     "vue-template-compiler": "^2.5.2",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",

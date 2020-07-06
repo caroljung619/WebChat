@@ -2,6 +2,8 @@ import Vue from "vue";
 import Router from "vue-router";
 import Register from "@/components/Register";
 import Login from "@/components/Login";
+import ChatStart from "@/components/ChatStart";
+import ChatConnect from "@/components/ChatConnect";
 
 Vue.use(Router);
 
@@ -10,17 +12,22 @@ export default new Router({
     {
       path: "/",
       name: "Login",
-      component: Login
+      component: Login,
     },
     {
       path: "/login",
       name: "Login",
-      component: Login
+      component: Login,
     },
     {
       path: "/register",
       name: "Register",
-      component: Register
-    }
-  ]
+      component: Register,
+    },
+    {
+      path: "/chat-start",
+      name: "ChatStart",
+      component: ChatStart,
+    },
+  ],
 });

@@ -4,6 +4,11 @@ import Vue from "vue";
 import App from "./App";
 import router from "./router";
 
+import $ from "jquery";
+window.jQuery = window.$ = $;
+// require("bootstrap/dist/css/bootstrap.min.css");
+// require("bootstrap/dist/js/bootstrap.min.js");
+
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */
@@ -13,5 +18,5 @@ new Vue({
   router,
   // components: { App },
   // template: "<App/>"
-  render: h => h(App)
+  render: (h) => h(App),
 });

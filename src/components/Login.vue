@@ -26,6 +26,7 @@ export default {
     submit: function() {
       console.log("username is: " + this.username);
       console.log("password is: " + this.password);
+      this.$router.push("/chat-start");
     }
   }
 };
