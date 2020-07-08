@@ -1,11 +1,12 @@
 <template>
   <div>
-    <div id="username-page">
+    <!-- <div id="username-page">
       <div class="username-page-container">
         <h1 class="title">Type your username</h1>
         <form id="usernameForm" name="usernameForm">
           <div class="form-group">
             <input
+              v-model="username"
               type="text"
               id="name"
               placeholder="Username"
@@ -14,15 +15,29 @@
             />
           </div>
           <div class="form-group">
-            <button type="submit" class="accent username-submit">
-              Start Chatting
-            </button>
+            <button
+              @click.prevent="connect"
+              type="submit"
+              class="accent username-submit"
+            >Start Chatting</button>
           </div>
         </form>
       </div>
+    </div>-->
+    <div class="form-group">
+      <input
+        v-model="username"
+        type="text"
+        id="name"
+        placeholder="Username"
+        autocomplete="off"
+        class="form-control"
+      />
+    </div>
+    <div class="form-group">
+      <button @click.prevent="connect" type="submit" class="accent username-submit">Start Chatting</button>
     </div>
     <div id="chat-page">
-      <button @click.prevent="connect">Connect</button>
       <div class="chat-container">
         <div class="chat-header">
           <h2>Start Chat</h2>
@@ -30,39 +45,34 @@
         <!-- <div class="connecting">
         Connecting...
         </div>-->
-        <ul id="messageArea"></ul>
-        <form id="messageForm" name="messageForm">
+        <ul id="messageArea">
+          <div v-for="(item, index) in receivedMessages" v-bind:key="index">
+            <li v-if="item.content" class="chat-message">
+              <i style="background-color: lightgreen">{{item.sender[0]}}</i>
+              <span>{{item.sender}}</span>
+              <p>{{item.content}}</p>
+            </li>
+            <li v-else class="event-message">
+              <p>{{item.sender + ' joined!'}}</p>
+            </li>
+          </div>
+        </ul>
+        <form id="messageForm" name="messageForm" nameForm="messageForm">
           <div class="form-group">
             <div class="input-group clearfix">
               <input
                 type="text"
                 id="message"
-                v-model="message"
-                placeholder="Type a message..."
+                v-model="send_message"
+                placeholder="Enter message"
                 autocomplete="off"
                 class="form-control"
               />
-              <button @click.prevent="send" type="submit" class="primary">
-                Send
-              </button>
+              <button @click.prevent="sendMessage" type="submit" class="primary">Send</button>
             </div>
           </div>
         </form>
       </div>
-    </div>
-    <div>
-      <table id="conversation" class="table table-striped">
-        <thead>
-          <tr>
-            <th>Greetings</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="item in received_messages" :key="item">
-            <td>{{ item }}</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </template>
@@ -80,98 +90,62 @@ export default {
   // },
   data() {
     return {
-      username: "caroljung",
+      username: "",
       // stompClient: null,
       message: "",
-      received_messages: [],
+      receivedMessages: [],
       send_message: null,
       connected: false,
-      client: null,
+      client: null
     };
   },
   methods: {
     connect() {
+      console.log("function connect");
+
       this.socket = new SockJS("http://localhost:8080/ws");
       this.stompClient = Stomp.over(this.socket);
-      this.stompClient.connect(
-        {},
-        (frame) => {
-          this.connected = true;
-          console.log(frame);
-          this.stompClient.subscribe("/topic/public", (tick) => {
-            console.log(tick);
-            this.received_messages.push(JSON.parse(tick.body).content);
-            console.log("HIIIII");
-          });
-        },
-        (error) => {
-          console.log("ERRORRR");
-          this.connected = false;
-        }
-      );
-    },
-    send() {
-      console.log("Send message:" + this.send_message);
-      if (this.stompClient && this.stompClient.connected) {
-        const msg = { sender: "Jung", type: "CHAT" };
-        console.log(JSON.stringify(msg));
-        this.stompClient.send("/app/chat.tempMethod", JSON.stringify(msg), {});
-      }
-    },
-    onMessageReceived(payload) {
-      console.log("inside onMessageReceived");
-
-      var message = JSON.parse(payload.body);
-      console.log(message);
-      console.log(message.type);
-      if (message.type === "JOIN") {
-        console.log("join");
-      } else if (message.type === "LEAVE") {
-        console.log("leave");
-      } else if (message.type === "CHAT") {
-        console.log("chat");
-      }
-      console.log("HI");
-      this.received_messages.push(JSON.parse(payload.body).content);
+      this.stompClient.connect({}, this.onConnected, error => {
+        console.log("ERRORRR");
+        this.connected = false;
+      });
     },
     onConnected(frame) {
-      console.log(frame);
+      console.log("functiononConnected");
       this.connected = true;
       this.stompClient.subscribe("/topic/public", this.onMessageReceived);
-
-      let msg = new Message(this.username, "JOIN");
-      // var msg = JSON.stringify({ sender: this.username, type: "JOIN" });
-      console.log(msg);
-      console.log(typeof msg);
-      this.client.send(
-        "/app/chat.tempMethod",
-        {},
-        JSON.stringify({ sender: this.username, type: "JOIN" })
+      this.stompClient.send(
+        "/app/chat.addUser",
+        JSON.stringify({ sender: this.username, type: "JOIN" }),
+        {}
       );
+      console.log(JSON.stringify({ sender: this.username, type: "JOIN" }));
+    },
+    onMessageReceived(payload) {
+      this.receivedMessages.push(JSON.parse(payload.body));
+      console.log(this.receivedMessages);
     },
     onError(error) {
       console.log("-----error");
     },
     sendMessage(event) {
       console.log("sendMessage");
-      // var messageContent = messageInput.value.trim();
-      // var messageContent = "hello";
-      if (this.message && this.stompClient) {
+      if (this.stompClient && this.stompClient.connected && this.send_message) {
         var chatMessage = {
           sender: this.username,
-          content: this.message,
-          type: "CHAT",
+          content: this.send_message,
+          type: "CHAT"
         };
         this.stompClient.send(
           "/app/chat.sendMessage",
-          {},
-          JSON.stringify(chatMessage)
+          JSON.stringify(chatMessage),
+          {}
         );
-        // messageInput.value = "";
+        this.send_message = "";
       }
       event.preventDefault();
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -290,6 +264,7 @@ button.accent {
 
 #username-page {
   text-align: center;
+  margin-bottom: 400px;
 }
 
 .username-page-container {
@@ -299,7 +274,7 @@ button.accent {
   width: 100%;
   max-width: 500px;
   display: inline-block;
-  margin-top: 42px;
+  /* margin-top: 42px; */
   vertical-align: middle;
   position: relative;
   padding: 35px 55px 35px;
@@ -318,7 +293,6 @@ button.accent {
 
 #chat-page {
   position: relative;
-  /* height: 100%; */
   height: 500px;
 }
 
@@ -374,6 +348,7 @@ button.accent {
 #chat-page .chat-message {
   padding-left: 68px;
   position: relative;
+  text-align: left;
 }
 
 #chat-page .chat-message i {
