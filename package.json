@@ -18,7 +18,7 @@
     "bootstrap": "^4.5.0",
     "emoji-mart-vue": "^2.6.6",
     "jquery": "^3.5.1",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "sass-loader": "^9.0.1",
     "sockjs-client": "^1.4.0",
     "vue": "^2.5.2",
